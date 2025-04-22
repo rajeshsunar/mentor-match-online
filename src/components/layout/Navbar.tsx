@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Search, User, LogOut, Settings } from "lucide-react";
 import AuthModal from "../auth/AuthModal";
+import { supabase } from "@/integrations/supabase/client";
 
 // Mock auth state - would be replaced with real auth
 const useAuth = () => {
@@ -69,6 +70,7 @@ const Navbar = () => {
       description: "You have successfully logged in.",
       duration: 3000,
     });
+    return true; // Return boolean to match expected type
   };
 
   const handleRegister = async (name: string, email: string, password: string, role: string) => {
@@ -79,6 +81,7 @@ const Navbar = () => {
       description: `Welcome to Tutor Finder. You're registered as a ${role}.`,
       duration: 3000,
     });
+    return true; // Return boolean to match expected type
   };
 
   return (
