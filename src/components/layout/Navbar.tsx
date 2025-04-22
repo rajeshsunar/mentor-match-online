@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -62,7 +61,7 @@ const Navbar = () => {
     setIsAuthModalOpen(true);
   };
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = async (email: string, password: string): Promise<boolean> => {
     await login(email, password);
     setIsAuthModalOpen(false);
     toast({
@@ -70,10 +69,10 @@ const Navbar = () => {
       description: "You have successfully logged in.",
       duration: 3000,
     });
-    return true; // Return boolean to match expected type
+    return true;
   };
 
-  const handleRegister = async (name: string, email: string, password: string, role: string) => {
+  const handleRegister = async (name: string, email: string, password: string, role: string): Promise<boolean> => {
     await register(name, email, password, role);
     setIsAuthModalOpen(false);
     toast({
@@ -81,7 +80,7 @@ const Navbar = () => {
       description: `Welcome to Tutor Finder. You're registered as a ${role}.`,
       duration: 3000,
     });
-    return true; // Return boolean to match expected type
+    return true;
   };
 
   return (
