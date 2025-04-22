@@ -8,7 +8,13 @@ export const authService = {
       password,
     });
     
-    if (error) throw error;
+    if (error) {
+      // Check specifically for email confirmation errors
+      if (error.message === "Email not confirmed" || error.code === "email_not_confirmed") {
+        throw new Error("Please verify your email before logging in. Check your inbox for a confirmation link.");
+      }
+      throw error;
+    }
     return data;
   },
 
@@ -26,6 +32,14 @@ export const authService = {
     });
     
     if (error) throw error;
+    
+    // Add a note about email verification if it's required
+    if (!data.user?.identities?.[0]?.identity_data?.email_verified) {
+      return {
+        ...data,
+        message: "Account created! Please check your email to verify your account before logging in."
+      };
+    }
     return data;
   },
 
@@ -38,5 +52,15 @@ export const authService = {
     const { data, error } = await supabase.auth.getSession();
     if (error) throw error;
     return data.session;
+  },
+  
+  async resendConfirmationEmail(email: string) {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+    });
+    
+    if (error) throw error;
+    return { success: true };
   }
 };
