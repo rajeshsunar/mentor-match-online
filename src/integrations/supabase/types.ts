@@ -36,6 +36,110 @@ export type Database = {
         }
         Relationships: []
       }
+      sessions: {
+        Row: {
+          created_at: string | null
+          grade_level: string | null
+          id: string
+          location: string | null
+          payment_option: string | null
+          price_per_hour: number | null
+          scheduled_at: string
+          status: string
+          student_id: string
+          subject: string
+          tutor_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          grade_level?: string | null
+          id?: string
+          location?: string | null
+          payment_option?: string | null
+          price_per_hour?: number | null
+          scheduled_at: string
+          status?: string
+          student_id: string
+          subject: string
+          tutor_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          grade_level?: string | null
+          id?: string
+          location?: string | null
+          payment_option?: string | null
+          price_per_hour?: number | null
+          scheduled_at?: string
+          status?: string
+          student_id?: string
+          subject?: string
+          tutor_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_student"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_tutor"
+            columns: ["tutor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tutor_portfolios: {
+        Row: {
+          availability_end: string | null
+          availability_start: string | null
+          created_at: string | null
+          experience: string | null
+          hourly_rate: number | null
+          id: string
+          subjects: string[]
+          tutor_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          availability_end?: string | null
+          availability_start?: string | null
+          created_at?: string | null
+          experience?: string | null
+          hourly_rate?: number | null
+          id?: string
+          subjects: string[]
+          tutor_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          availability_end?: string | null
+          availability_start?: string | null
+          created_at?: string | null
+          experience?: string | null
+          hourly_rate?: number | null
+          id?: string
+          subjects?: string[]
+          tutor_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_portfolios_tutor_id_fkey"
+            columns: ["tutor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
