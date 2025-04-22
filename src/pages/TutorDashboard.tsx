@@ -84,7 +84,7 @@ const TutorDashboard = () => {
     queryFn: async () => {
       if (!user) return [];
       
-      // First, fetch sessions with student_id
+      // First, fetch sessions with student info
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('sessions')
         .select(`
@@ -153,6 +153,7 @@ const TutorDashboard = () => {
         subjects: portfolio.subjects || [],
         experience: portfolio.experience || "",
         hourlyRate: portfolio.hourly_rate || undefined,
+        // Since location might not exist in the database schema yet, provide a default value if missing
         location: portfolio.location || "",
         availabilityStart: portfolio.availability_start || "09:00",
         availabilityEnd: portfolio.availability_end || "17:00",
@@ -179,7 +180,7 @@ const TutorDashboard = () => {
           subjects: values.subjects,
           experience: values.experience,
           hourly_rate: values.hourlyRate,
-          location: values.location,
+          location: values.location, // Include location in the data being sent to the database
           availability_start: values.availabilityStart,
           availability_end: values.availabilityEnd,
         });
