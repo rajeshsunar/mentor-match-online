@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -48,7 +47,6 @@ const TutorDashboard = () => {
     "Economics", "Foreign Languages", "Art", "Music"
   ];
 
-  // Fetch existing portfolio
   const { 
     data: portfolio, 
     isLoading: isLoadingPortfolio,
@@ -64,7 +62,7 @@ const TutorDashboard = () => {
         .eq('tutor_id', user.id)
         .single();
       
-      if (error && error.code !== 'PGRST116') { // PGRST116 is the error code for no rows returned
+      if (error && error.code !== 'PGRST116') {
         console.error("Error fetching portfolio:", error);
         throw error;
       }
@@ -74,7 +72,6 @@ const TutorDashboard = () => {
     enabled: !!user,
   });
 
-  // Fetch session requests
   const { 
     data: sessionRequests = [], 
     isLoading: isLoadingRequests,
@@ -84,7 +81,6 @@ const TutorDashboard = () => {
     queryFn: async () => {
       if (!user) return [];
       
-      // First, fetch sessions with student info
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('sessions')
         .select(`
@@ -105,7 +101,6 @@ const TutorDashboard = () => {
         throw sessionsError;
       }
       
-      // Now for each session, fetch the student's profile data
       const sessionsWithStudentNames = await Promise.all(
         sessionsData.map(async (session) => {
           const { data: studentData, error: studentError } = await supabase
@@ -146,15 +141,15 @@ const TutorDashboard = () => {
     }
   });
 
-  // Update form with existing portfolio data when loaded
   useEffect(() => {
     if (portfolio) {
+      const portfolioData = portfolio as any;
+      
       form.reset({
         subjects: portfolio.subjects || [],
         experience: portfolio.experience || "",
         hourlyRate: portfolio.hourly_rate || undefined,
-        // Since location might not exist in the database schema yet, provide a default value if missing
-        location: portfolio.location || "",
+        location: portfolioData.location || "",
         availabilityStart: portfolio.availability_start || "09:00",
         availabilityEnd: portfolio.availability_end || "17:00",
       });
@@ -180,7 +175,7 @@ const TutorDashboard = () => {
           subjects: values.subjects,
           experience: values.experience,
           hourly_rate: values.hourlyRate,
-          location: values.location, // Include location in the data being sent to the database
+          location: values.location,
           availability_start: values.availabilityStart,
           availability_end: values.availabilityEnd,
         });
@@ -192,7 +187,6 @@ const TutorDashboard = () => {
         description: "Your tutor portfolio has been successfully saved.",
       });
       
-      // Refresh portfolio data
       refetchPortfolio();
     } catch (error) {
       toast({
@@ -212,8 +206,8 @@ const TutorDashboard = () => {
         .from('sessions')
         .update({ status: newStatus })
         .eq('id', sessionId)
-        .eq('tutor_id', user?.id); // Security check
-      
+        .eq('tutor_id', user?.id);
+
       if (error) throw error;
       
       toast({
@@ -222,7 +216,6 @@ const TutorDashboard = () => {
         duration: 3000,
       });
       
-      // Refresh requests
       refetchRequests();
     } catch (error) {
       console.error("Error updating session status:", error);
