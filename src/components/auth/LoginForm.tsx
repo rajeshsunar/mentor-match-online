@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { authService } from "@/services/auth";
 import { AlertCircle, CheckCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -86,6 +87,20 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
     }
   };
 
+  const handleSkipVerification = async () => {
+    const values = form.getValues();
+    setIsLoading(true);
+    try {
+      // Try to login directly, our updated auth service will handle unverified emails
+      await onLogin(values.email, values.password);
+    } catch (error) {
+      console.error("Login bypass failed:", error);
+      setErrorMessage(error instanceof Error ? error.message : "Login failed. Please contact support.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -127,14 +142,24 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
         />
         
         {errorMessage && (
-          <div className="text-sm font-medium text-destructive flex items-start gap-2">
-            <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-            <span>{errorMessage}</span>
-          </div>
+          <Alert variant="destructive" className="py-2">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
         )}
         
         {isEmailNotConfirmed && (
           <div className="flex flex-col space-y-2">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={handleSkipVerification}
+              disabled={isLoading}
+              className="w-full"
+            >
+              Continue without email verification
+            </Button>
+            
             <Button 
               type="button" 
               variant="outline" 
