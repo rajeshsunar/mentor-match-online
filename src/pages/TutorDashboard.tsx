@@ -15,15 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
+import { MultipleSelect, MultipleSelectItem } from "@/components/ui/multiple-select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const portfolioSchema = z.object({
   subjects: z.array(z.string()).min(1, "Select at least one subject"),
@@ -35,6 +30,7 @@ const portfolioSchema = z.object({
 
 const TutorDashboard = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const subjects = [
@@ -54,12 +50,21 @@ const TutorDashboard = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof portfolioSchema>) => {
+    if (!user) {
+      toast({
+        title: "Authentication Error",
+        description: "You must be logged in to update your portfolio.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { error } = await supabase
         .from('tutor_portfolios')
         .upsert({
-          tutor_id: supabase.auth.getUser().then(res => res.data.user?.id),
+          tutor_id: user.id,
           subjects: values.subjects,
           experience: values.experience,
           hourly_rate: values.hourlyRate,
@@ -102,24 +107,19 @@ const TutorDashboard = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Subjects You Can Teach</FormLabel>
-                    <Select
-                      multiple
-                      onValueChange={(values) => field.onChange(values)}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select subjects" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
+                    <FormControl>
+                      <MultipleSelect
+                        placeholder="Select subjects"
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         {subjects.map((subject) => (
-                          <SelectItem key={subject} value={subject}>
+                          <MultipleSelectItem key={subject} value={subject}>
                             {subject}
-                          </SelectItem>
+                          </MultipleSelectItem>
                         ))}
-                      </SelectContent>
-                    </Select>
+                      </MultipleSelect>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
