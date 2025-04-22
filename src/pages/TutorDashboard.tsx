@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -83,7 +84,8 @@ const TutorDashboard = () => {
     queryFn: async () => {
       if (!user) return [];
       
-      const { data, error } = await supabase
+      // First, fetch sessions with student_id
+      const { data: sessionsData, error: sessionsError } = await supabase
         .from('sessions')
         .select(`
           id, 
@@ -93,20 +95,41 @@ const TutorDashboard = () => {
           status, 
           price_per_hour,
           location,
-          student_id(id, profiles:profiles(first_name, last_name))
+          student_id
         `)
         .eq('tutor_id', user.id)
         .order('scheduled_at', { ascending: false });
       
-      if (error) {
-        console.error("Error fetching session requests:", error);
-        throw error;
+      if (sessionsError) {
+        console.error("Error fetching session requests:", sessionsError);
+        throw sessionsError;
       }
       
-      return data.map(session => ({
-        ...session,
-        student_name: session.student_id?.profiles?.first_name + ' ' + session.student_id?.profiles?.last_name || 'Unknown Student',
-      }));
+      // Now for each session, fetch the student's profile data
+      const sessionsWithStudentNames = await Promise.all(
+        sessionsData.map(async (session) => {
+          const { data: studentData, error: studentError } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', session.student_id)
+            .single();
+
+          if (studentError) {
+            console.error("Error fetching student profile:", studentError);
+            return {
+              ...session,
+              student_name: 'Unknown Student'
+            };
+          }
+
+          return {
+            ...session,
+            student_name: `${studentData.first_name || ''} ${studentData.last_name || ''}`.trim() || 'Unknown Student'
+          };
+        })
+      );
+      
+      return sessionsWithStudentNames;
     },
     enabled: !!user,
   });

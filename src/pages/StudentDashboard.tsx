@@ -67,7 +67,8 @@ const StudentDashboard = () => {
     queryFn: async () => {
       if (!user) return [];
       
-      const { data, error } = await supabase
+      // First, fetch sessions with tutor_id
+      const { data: sessionsData, error: sessionsError } = await supabase
         .from('sessions')
         .select(`
           id, 
@@ -77,24 +78,53 @@ const StudentDashboard = () => {
           price_per_hour, 
           location, 
           payment_option,
-          tutor_id(id, profiles:profiles(first_name, last_name))
+          tutor_id
         `)
         .eq('student_id', user.id)
         .order('scheduled_at', { ascending: false });
 
-      if (error) {
-        console.error("Error fetching sessions:", error);
+      if (sessionsError) {
+        console.error("Error fetching sessions:", sessionsError);
         throw new Error("Failed to fetch sessions");
       }
 
-      // Transform the data to include tutor name
-      return data.map(session => ({
-        ...session,
-        tutor_name: session.tutor_id?.profiles?.first_name + ' ' + session.tutor_id?.profiles?.last_name || 'Unknown Tutor',
-      })) as Session[];
+      // Now for each session, fetch the tutor's profile data
+      const sessionsWithTutorNames = await Promise.all(
+        sessionsData.map(async (session) => {
+          const { data: tutorData, error: tutorError } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', session.tutor_id)
+            .single();
+
+          if (tutorError) {
+            console.error("Error fetching tutor profile:", tutorError);
+            return {
+              ...session,
+              tutor_name: 'Unknown Tutor'
+            };
+          }
+
+          return {
+            ...session,
+            tutor_name: `${tutorData.first_name || ''} ${tutorData.last_name || ''}`.trim() || 'Unknown Tutor'
+          };
+        })
+      );
+
+      return sessionsWithTutorNames as Session[];
     },
     enabled: !!user,
   });
+
+  // Determine upcoming and past sessions
+  const now = new Date();
+  const upcomingSessions = sessions.filter(
+    session => new Date(session.scheduled_at) >= now
+  );
+  const pastSessions = sessions.filter(
+    session => new Date(session.scheduled_at) < now
+  );
 
   // Function to update payment option
   const handlePaymentOptionChange = async (sessionId: string, paymentOption: string) => {
@@ -122,15 +152,6 @@ const StudentDashboard = () => {
       });
     }
   };
-
-  // Determine upcoming and past sessions
-  const now = new Date();
-  const upcomingSessions = sessions.filter(
-    session => new Date(session.scheduled_at) >= now
-  );
-  const pastSessions = sessions.filter(
-    session => new Date(session.scheduled_at) < now
-  );
 
   return (
     <div className="min-h-screen flex flex-col">
