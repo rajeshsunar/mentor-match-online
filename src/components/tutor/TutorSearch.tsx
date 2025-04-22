@@ -40,7 +40,7 @@ interface TutorSearchProps {
 
 const TutorSearch = ({ onSearch, className = "", simplified = false, showPriceFilter = false }: TutorSearchProps) => {
   const [isSearching, setIsSearching] = useState(false);
-  const [priceRange, setPriceRange] = useState([100]);
+  const [priceRange, setPriceRange] = useState([300]);
 
   const form = useForm<SearchFormValues>({
     resolver: zodResolver(searchSchema),
@@ -68,21 +68,19 @@ const TutorSearch = ({ onSearch, className = "", simplified = false, showPriceFi
     "Mathematics",
     "Science",
     "English",
-    "History",
-    "Programming",
+    "Nepali",
+    "Computer Science",
     "Physics",
     "Chemistry",
     "Biology",
     "Economics",
-    "Foreign Languages",
+    "Social Studies",
   ];
 
   const gradeLevels = [
     "Elementary",
-    "Middle School",
-    "High School",
-    "College",
-    "Adult Education",
+    "Secondary School",
+    "High Secondary School",
   ];
 
   const handlePriceChange = (value: number[]) => {
@@ -174,11 +172,12 @@ const TutorSearch = ({ onSearch, className = "", simplified = false, showPriceFi
           
           {showPriceFilter && (
             <div className="pt-2">
-              <div className="mb-2 text-sm font-medium">Max Hourly Rate: ${priceRange[0]}</div>
+              <div className="mb-2 text-sm font-medium">Max Hourly Rate: Rs.{priceRange[0]}</div>
               <Slider
-                defaultValue={[100]}
-                max={200}
-                step={5}
+                defaultValue={[500]}
+                max={1000}
+                min = {300}
+                step={50}
                 value={priceRange}
                 onValueChange={handlePriceChange}
                 className="my-6"

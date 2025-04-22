@@ -348,7 +348,7 @@ const TutorDashboard = () => {
                       name="hourlyRate"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Hourly Rate ($)</FormLabel>
+                          <FormLabel>Hourly Rate (Rs.)</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 

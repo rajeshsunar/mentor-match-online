@@ -110,7 +110,7 @@ const Navbar = () => {
   return (
     <div className="bg-white shadow-sm border-b py-4">
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-        <div className="font-bold text-tutor-primary text-xl">TutorFinder</div>
+        <div className="font-bold text-tutor-primary text-xl">HomeTutorFinder</div>
         
         <div className="flex items-center gap-6">
           {/* Navigation Links */}

@@ -71,7 +71,7 @@ const RegisterForm = ({ onRegister }: RegisterFormProps) => {
               <FormLabel>Full Name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="John Doe"
+                  placeholder="Rajesh Sunar"
                   disabled={isLoading}
                   {...field}
                 />

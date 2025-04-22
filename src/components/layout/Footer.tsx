@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">TutorFinder</h3>
+            <h3 className="text-xl font-bold mb-4">HomeTutorFinder</h3>
             <p className="text-gray-300 mb-4">
               Connecting students with the perfect tutors to achieve academic excellence.
             </p>
@@ -58,17 +58,17 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contact</h4>
             <address className="text-gray-300 not-italic">
-              <p>123 Education St.</p>
-              <p>Learning City, 12345</p>
-              <p className="mt-4">support@tutorfinder.com</p>
-              <p>(123) 456-7890</p>
+              <p>Kingscollege</p>
+              <p>Babrmahal, Kathmandu</p>
+              <p className="mt-4">support@hometutorfinder.com</p>
+              <p>(+977) 9742857002</p>
             </address>
           </div>
         </div>
         
         <div className="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            &copy; {new Date().getFullYear()} TutorFinder. All rights reserved.
+            &copy; {new Date().getFullYear()} HomeTutorFinder. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link to="/terms" className="text-gray-400 text-sm hover:text-white transition-colors">

@@ -80,7 +80,7 @@ const TutorCard = ({ tutor }: TutorCardProps) => {
           </div>
           <div className="text-right">
             <p className="text-lg font-bold text-tutor-primary">
-              ${tutor.hourlyRate}
+              Rs.{tutor.hourlyRate}
               <span className="text-sm text-gray-500 font-normal">/hr</span>
             </p>
             <p className="text-sm text-gray-500">{tutor.location}</p>
