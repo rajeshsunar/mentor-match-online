@@ -1,15 +1,19 @@
 
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { authService } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
+import AuthModal from "@/components/auth/AuthModal";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [initialAuthMode, setInitialAuthMode] = useState<"login" | "register">("login");
 
   const handleLogin = async (email: string, password: string): Promise<boolean> => {
     try {
@@ -47,6 +51,32 @@ const Navbar = () => {
     }
   };
 
+  const handleRegister = async (name: string, email: string, password: string, role: string): Promise<boolean> => {
+    try {
+      const response = await authService.register(name, email, password, role);
+      
+      if (!response || !response.user) {
+        throw new Error("Registration failed");
+      }
+      
+      toast({
+        title: "Registration successful!",
+        description: "Your account has been created.",
+        duration: 3000,
+      });
+      return true;
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast({
+        title: "Registration failed",
+        description: error instanceof Error ? error.message : "An error occurred during registration",
+        variant: "destructive",
+        duration: 5000,
+      });
+      throw error;
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await authService.logout();
@@ -65,6 +95,16 @@ const Navbar = () => {
         duration: 5000,
       });
     }
+  };
+
+  const openLoginModal = () => {
+    setInitialAuthMode("login");
+    setAuthModalOpen(true);
+  };
+
+  const openRegisterModal = () => {
+    setInitialAuthMode("register");
+    setAuthModalOpen(true);
   };
 
   return (
@@ -105,8 +145,16 @@ const Navbar = () => {
               </div>
             ) : (
               <>
-                <button className="text-gray-600 hover:text-tutor-primary transition-colors">Login</button>
-                <button className="bg-tutor-primary text-white px-4 py-2 rounded hover:bg-tutor-primary/90 transition-colors">
+                <button 
+                  className="text-gray-600 hover:text-tutor-primary transition-colors"
+                  onClick={openLoginModal}
+                >
+                  Login
+                </button>
+                <button 
+                  className="bg-tutor-primary text-white px-4 py-2 rounded hover:bg-tutor-primary/90 transition-colors"
+                  onClick={openRegisterModal}
+                >
                   Sign Up
                 </button>
               </>
@@ -114,6 +162,15 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        initialMode={initialAuthMode}
+        onLogin={handleLogin}
+        onRegister={handleRegister}
+      />
     </div>
   );
 };
