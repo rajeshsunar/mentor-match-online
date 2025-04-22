@@ -32,5 +32,11 @@ export const authService = {
   async logout() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+  },
+  
+  async getCurrentSession() {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    return data.session;
   }
 };

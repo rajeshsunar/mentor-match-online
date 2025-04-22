@@ -55,13 +55,14 @@ const Navbar = () => {
       });
       return true;
     } catch (error) {
+      console.error("Login error:", error);
       toast({
         title: "Login failed",
         description: error instanceof Error ? error.message : "An error occurred during login",
         variant: "destructive",
-        duration: 3000,
+        duration: 5000,
       });
-      return false;
+      throw error;
     }
   };
 
@@ -80,9 +81,9 @@ const Navbar = () => {
         title: "Registration failed",
         description: error instanceof Error ? error.message : "An error occurred during registration",
         variant: "destructive",
-        duration: 3000,
+        duration: 5000,
       });
-      return false;
+      throw error;
     }
   };
 

@@ -27,6 +27,7 @@ interface LoginFormProps {
 
 const LoginForm = ({ onLogin }: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -38,10 +39,12 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
 
   const onSubmit = async (values: LoginFormValues) => {
     setIsLoading(true);
+    setErrorMessage(null);
     try {
       await onLogin(values.email, values.password);
     } catch (error) {
       console.error("Login error:", error);
+      setErrorMessage(error instanceof Error ? error.message : "Failed to log in. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -86,6 +89,9 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
             </FormItem>
           )}
         />
+        {errorMessage && (
+          <div className="text-sm font-medium text-destructive">{errorMessage}</div>
+        )}
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Logging in..." : "Login"}
         </Button>
