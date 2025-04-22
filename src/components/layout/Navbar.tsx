@@ -10,50 +10,33 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { Search, User, LogOut, Settings } from "lucide-react";
+import { User, LogOut, Settings } from "lucide-react";
 import AuthModal from "../auth/AuthModal";
-import { supabase } from "@/integrations/supabase/client";
-
-// Mock auth state - would be replaced with real auth
-const useAuth = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<null | { name: string; email: string; role: string }>(null);
-
-  const login = (email: string, password: string) => {
-    // Mock login
-    setIsAuthenticated(true);
-    setUser({ name: 'Jane Doe', email, role: 'student' });
-    return Promise.resolve(true);
-  };
-
-  const register = (name: string, email: string, password: string, role: string) => {
-    // Mock register
-    setIsAuthenticated(true);
-    setUser({ name, email, role });
-    return Promise.resolve(true);
-  };
-
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-  };
-
-  return { isAuthenticated, user, login, register, logout };
-};
+import { authService } from "@/services/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  const { isAuthenticated, user, login, register, logout } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
 
-  const handleLogout = () => {
-    logout();
-    toast({
-      title: "Logged out successfully",
-      description: "You have been logged out from your account.",
-      duration: 3000,
-    });
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out from your account.",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: "Error logging out",
+        description: "There was an error logging out. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
   };
 
   const handleOpenAuthModal = (mode: 'login' | 'register') => {
@@ -62,25 +45,45 @@ const Navbar = () => {
   };
 
   const handleLogin = async (email: string, password: string): Promise<boolean> => {
-    await login(email, password);
-    setIsAuthModalOpen(false);
-    toast({
-      title: "Welcome back!",
-      description: "You have successfully logged in.",
-      duration: 3000,
-    });
-    return true;
+    try {
+      await authService.login(email, password);
+      setIsAuthModalOpen(false);
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
+        duration: 3000,
+      });
+      return true;
+    } catch (error) {
+      toast({
+        title: "Login failed",
+        description: error instanceof Error ? error.message : "An error occurred during login",
+        variant: "destructive",
+        duration: 3000,
+      });
+      return false;
+    }
   };
 
   const handleRegister = async (name: string, email: string, password: string, role: string): Promise<boolean> => {
-    await register(name, email, password, role);
-    setIsAuthModalOpen(false);
-    toast({
-      title: "Account created!",
-      description: `Welcome to Tutor Finder. You're registered as a ${role}.`,
-      duration: 3000,
-    });
-    return true;
+    try {
+      await authService.register(name, email, password, role);
+      setIsAuthModalOpen(false);
+      toast({
+        title: "Account created!",
+        description: `Welcome to Tutor Finder. You're registered as a ${role}.`,
+        duration: 3000,
+      });
+      return true;
+    } catch (error) {
+      toast({
+        title: "Registration failed",
+        description: error instanceof Error ? error.message : "An error occurred during registration",
+        variant: "destructive",
+        duration: 3000,
+      });
+      return false;
+    }
   };
 
   return (
@@ -104,22 +107,22 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          {isAuthenticated ? (
+          {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="focus:outline-none">
                 <div className="flex items-center space-x-2">
                   <Avatar className="h-8 w-8 cursor-pointer">
-                    <AvatarImage src="" alt={user?.name || ""} />
+                    <AvatarImage src="" alt={user?.email || ""} />
                     <AvatarFallback className="bg-tutor-primary text-white">
-                      {user?.name?.charAt(0) || "U"}
+                      {user?.email?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="hidden md:inline text-sm font-medium">{user?.name}</span>
+                  <span className="hidden md:inline text-sm font-medium">{user?.email}</span>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <div className="px-4 py-2">
-                  <p className="text-sm font-medium">{user?.name}</p>
+                  <p className="text-sm font-medium">{user?.email}</p>
                   <p className="text-xs text-muted-foreground">{user?.email}</p>
                 </div>
                 <DropdownMenuSeparator />
