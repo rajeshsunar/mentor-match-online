@@ -77,7 +77,7 @@ const StudentDashboard = () => {
           price_per_hour, 
           location, 
           payment_option,
-          tutor_id(id, profiles(first_name, last_name))
+          tutor_id(id, profiles:profiles(first_name, last_name))
         `)
         .eq('student_id', user.id)
         .order('scheduled_at', { ascending: false });

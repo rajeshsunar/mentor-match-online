@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -94,7 +93,7 @@ const TutorDashboard = () => {
           status, 
           price_per_hour,
           location,
-          student_id(id, profiles(first_name, last_name))
+          student_id(id, profiles:profiles(first_name, last_name))
         `)
         .eq('tutor_id', user.id)
         .order('scheduled_at', { ascending: false });
