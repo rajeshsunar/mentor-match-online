@@ -8,6 +8,7 @@ interface TutorGridProps {
     subject?: string;
     gradeLevel?: string;
     location?: string;
+    maxPrice?: number;
   };
 }
 
@@ -100,6 +101,12 @@ const TutorGrid = ({ filters }: TutorGridProps) => {
           if (filters.location) {
             filteredTutors = filteredTutors.filter(tutor => 
               tutor.location.toLowerCase().includes(filters.location?.toLowerCase() || "")
+            );
+          }
+          
+          if (filters.maxPrice) {
+            filteredTutors = filteredTutors.filter(tutor => 
+              tutor.hourlyRate <= (filters.maxPrice || Number.MAX_VALUE)
             );
           }
         }
