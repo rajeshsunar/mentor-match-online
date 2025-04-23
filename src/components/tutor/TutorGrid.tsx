@@ -71,6 +71,15 @@ const mockTutors: TutorType[] = [
     hourlyRate: 600,
     rating: 4.5,
   },
+  {
+    id: "7",
+    name: "Manoj Pandey",
+    subjects: ["Mathematics", "ComputerScience"],
+    gradeLevel: "High School",
+    location: "NewRoad, Kathmandu",
+    hourlyRate: 600,
+    rating: 4.5,
+  },
 ];
 
 const TutorGrid = ({ filters }: TutorGridProps) => {

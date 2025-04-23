@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">HomeTutorFinder</h3>
+            <h3 className="text-xl font-bold mb-4">Home शिक्षा</h3>
             <p className="text-gray-300 mb-4">
               Connecting students with the perfect tutors to achieve academic excellence.
             </p>
@@ -61,7 +61,7 @@ const Footer = () => {
               <p>Kingscollege</p>
               <p>Babrmahal, Kathmandu</p>
               <p className="mt-4">support@hometutorfinder.com</p>
-              <p>(+977) 9742857002</p>
+              <p>(+977) 9742857005</p>
             </address>
           </div>
         </div>
